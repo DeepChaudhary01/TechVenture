@@ -32,3 +32,45 @@ enum Role {
   core
   super_user
 }
+
+model Event {
+  id          Int      @id @default(autoincrement())
+  type        String
+  title       String
+  date        String
+  time        String
+  location    String
+  description String   @db.Text
+  color       String   @default("primary")
+  attendees   Int      @default(0)
+  featured    Boolean  @default(false)
+  image       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  tags        Tag[]    @relation("EventToTag")
+  registrations Registration[]
+}
+
+model Tag {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  events    Event[]  @relation("EventToTag")
+}
+
+model Registration {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  eventId   Int
+  createdAt DateTime @default(now())
+  
+  // Relations
+  event     Event    @relation(fields: [eventId], references: [id])
+
+  @@unique([userId, eventId])
+}
