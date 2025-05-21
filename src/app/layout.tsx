@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
+import { AppLayoutWrapper } from "@/components/AppLayoutWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,9 +26,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <div className="flex min-h-screen flex-col">
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
+            <AppLayoutWrapper>{children}</AppLayoutWrapper>
           </div>
         </ThemeProvider>
       </body>
