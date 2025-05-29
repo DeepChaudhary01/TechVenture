@@ -68,9 +68,8 @@ model Registration {
   userId    String
   eventId   Int
   createdAt DateTime @default(now())
-  
-  // Relations
-  event     Event    @relation(fields: [eventId], references: [id])
+
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
   @@unique([userId, eventId])
 }

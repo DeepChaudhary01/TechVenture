@@ -1,48 +1,52 @@
-import { NextResponse } from "next/server"
-import prisma from "@/lib/prisma"
+import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
 
-export async function POST(request: Request) {
+export async function POST() {
   try {
-    const { userId, eventId } = await request.json()
+    await prisma.$transaction([
+      prisma.registration.deleteMany(),
+      prisma.event.deleteMany(),
+      prisma.tag.deleteMany(),
+    ]);
 
-    if (!userId || !eventId) {
-      return NextResponse.json({ error: "User ID and Event ID are required" }, { status: 400 })
-    }
+    const tags = await prisma.tag.createMany({
+      data: [
+        { name: "AI" },
+        { name: "Git" },
+        { name: "WebDev" },
+      ],
+    });
 
-    // Check if the event exists
-    const event = await prisma.event.findUnique({
-      where: { id: Number(eventId) },
-    })
-
-    if (!event) {
-      return NextResponse.json({ error: "Event not found" }, { status: 404 })
-    }
-
-    // Check if the user is already registered
-    const existingRegistration = await prisma.registration.findUnique({
-      where: {
-        userId_eventId: {
-          userId,
-          eventId: Number(eventId),
+    await prisma.event.createMany({
+      data: [
+        {
+          type: "Workshop",
+          title: "Past Git Workshop",
+          date: "May 1, 2025",
+          time: "10:00 AM",
+          location: "Lab A",
+          description: "Version control basics and GitHub.",
+          color: "blue",
+          featured: false,
+          attendees: 0,
         },
-      },
-    })
+        {
+          type: "Hackathon",
+          title: "Upcoming AI Sprint",
+          date: "July 15, 2025",
+          time: "9:00 AM",
+          location: "Auditorium",
+          description: "Build AI apps in teams.",
+          color: "green",
+          featured: true,
+          attendees: 0,
+        },
+      ],
+    });
 
-    if (existingRegistration) {
-      return NextResponse.json({ error: "User already registered for this event" }, { status: 400 })
-    }
-
-    // Create the registration
-    const registration = await prisma.registration.create({
-      data: {
-        userId,
-        eventId: Number(eventId),
-      },
-    })
-
-    return NextResponse.json({ success: true, registration })
-  } catch (error) {
-    console.error("Error registering for event:", error)
-    return NextResponse.json({ error: "Failed to register for event" }, { status: 500 })
+    return NextResponse.json({ success: true, message: "Seeded with 2 events" });
+  } catch (err) {
+    console.error("Seeding failed:", err);
+    return NextResponse.json({ error: "Failed to seed database" }, { status: 500 });
   }
 }
