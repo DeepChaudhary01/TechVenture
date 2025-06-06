@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { Header } from "./header";
 import { Footer } from "./footer";
+import { Toaster } from "./ui/toaster";
 
 export const AppLayoutWrapper = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
@@ -11,7 +12,10 @@ export const AppLayoutWrapper = ({ children }: { children: React.ReactNode }) =>
   return (
     <>
       {!hideLayout && <Header />}
-        <main className="flex-1">{children}</main>
+        <main className="flex-1">
+          {children}
+          <Toaster />
+        </main>
       {!hideLayout && <Footer />}
     </>
   );

@@ -32,3 +32,32 @@ enum Role {
   core
   super_user
 }
+
+model Event {
+  id               String   @id @default(cuid())
+  title            String
+  type             String   // Workshop, Hackathon, Tech Talk, Seminar, etc.
+  description      String   @db.Text
+  date             DateTime
+  time             String
+  location         String
+  attendees        Int      @default(0)
+  maxAttendees     Int
+  color            String   @default("#8B5CF6") // Hex color for theming
+  featured         Boolean  @default(false)
+  tags             String[] // Array of tags
+  difficulty       Difficulty
+  price            Float    @default(0)
+  registrationLink String?
+  imageUrl         String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("events")
+}
+
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
