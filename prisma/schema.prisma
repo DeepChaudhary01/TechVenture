@@ -34,42 +34,30 @@ enum Role {
 }
 
 model Event {
-  id          Int      @id @default(autoincrement())
-  type        String
-  title       String
-  date        String
-  time        String
-  location    String
-  description String   @db.Text
-  color       String   @default("primary")
-  attendees   Int      @default(0)
-  featured    Boolean  @default(false)
-  image       String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id               String   @id @default(cuid())
+  title            String
+  type             String   // Workshop, Hackathon, Tech Talk, Seminar, etc.
+  description      String   @db.Text
+  date             DateTime
+  time             String
+  location         String
+  attendees        Int      @default(0)
+  maxAttendees     Int
+  color            String   @default("#8B5CF6") // Hex color for theming
+  featured         Boolean  @default(false)
+  tags             String[] // Array of tags
+  difficulty       Difficulty
+  price            Float    @default(0)
+  registrationLink String?
+  imageUrl         String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
-  // Relations
-  tags        Tag[]    @relation("EventToTag")
-  registrations Registration[]
+  @@map("events")
 }
 
-model Tag {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Relations
-  events    Event[]  @relation("EventToTag")
-}
-
-model Registration {
-  id        Int      @id @default(autoincrement())
-  userId    String
-  eventId   Int
-  createdAt DateTime @default(now())
-
-  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, eventId])
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
 }
